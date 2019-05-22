@@ -12,7 +12,7 @@
 #include <math.h>
 #define M_PI 3.14159265358979323846
 #include <cmath> 
-
+#include <algorithm>   
 using namespace std;
 
 const int NUM_FILES = 5;
@@ -28,6 +28,26 @@ double smaCalc(vector<double> inputVec) {
 	}
 	sma = sum / inputVec.size();
 	return sma; 
+}
+
+double maxCalc(vector<double> inputVec) {
+	double max = inputVec[0];
+	for (int z = 0; z < inputVec.size(); z++) {
+		if (inputVec[z] > max) {
+			max = inputVec[z];
+		}
+	}
+	return max;
+}
+
+double minCalc(vector<double> inputVec) {
+	double min = inputVec[0];
+	for (int z = 0; z < inputVec.size(); z++) {
+		if (inputVec[z] < min) {
+			min = inputVec[z];
+		}
+	}
+	return min;
 }
 
 void readAndExtract(string input) {
@@ -169,47 +189,38 @@ void readAndExtract(string input) {
 		smaZHund.push_back(smaCalc(valsHundredZ));
 	}
 
-	vector<double> valsMinTwentyX;
-	vector<double> valsMinTwentyY;
-	vector<double> valsMinTwentyZ;
-
 	vector<double> valsMinHundredX;
 	vector<double> valsMinHundredY;
 	vector<double> valsMinHundredZ;
-
-	vector<double> valsMaxTwentyX;
-	vector<double> valsMaxTwentyY;
-	vector<double> valsMaxTwentyZ;
 
 	vector<double> valsMaxHundredX;
 	vector<double> valsMaxHundredY;
 	vector<double> valsMaxHundredZ;
 
 	for ( int i = 0; i < collectedTime.size(); i++) {
-			vector<double> valXTwenty;
-			vector<double> valYTwenty;
-			vector<double> valZTwenty;
 
-			vector<double> valXHundered;
+		
+			vector<double> valXHundred;
 			vector<double> valYHundred;
 			vector<double> valZHundred;
 
-			for (int j = i - 10; j < i + 10; j++) {
-				if (j >= 0) {
-					valXTwenty.push_back(doublesX[j]);
-					valYTwenty.push_back(doublesY[j]);
-					valZTwenty.push_back(doublesZ[j]);
-				}
-			}
-
 			for (int j = i - 50; j < i + 50; j++) {
 				if (j >= 0) {
-					valXHundered.push_back(doublesX[j]);
-					valYHundred.push_back(doublesY[j]);
-					valZHundred.push_back(doublesZ[j]);
+					if (j < doublesX.size()) {
+						valXHundred.push_back(doublesX[j]);
+						valYHundred.push_back(doublesY[j]);
+						valZHundred.push_back(doublesZ[j]);
+					}
+				
 				}
 			}
+			valsMaxHundredX.push_back(maxCalc(valXHundred));
+			valsMaxHundredY.push_back(maxCalc(valYHundred));
+			valsMaxHundredZ.push_back(maxCalc(valZHundred));
 
+			valsMinHundredX.push_back(minCalc(valXHundred));
+			valsMinHundredY.push_back(minCalc(valYHundred));
+			valsMinHundredZ.push_back(minCalc(valZHundred));
 	}
 
 	// min max 
@@ -217,10 +228,10 @@ void readAndExtract(string input) {
 	string display;
 	std::ofstream outputFile;
 	outputFile.open(input + ".csv");
-	outputFile << "Time,xAcceleration,yAcceleration,zAcceleration,xSMA(20 seconds), xSMA(100 seconds),ySMA(20 seconds),ySMA(100 seconds),zSMA(20 seconds),zSMA(100 seconds)" << endl;
+	outputFile << "Time,xAcceleration,yAcceleration,zAcceleration,xSMA(2.5 seconds),xSMA(10 seconds),ySMA(2.5 seconds),ySMA(10 seconds),zSMA(2.5 seconds),zSMA(10 seconds),minX(10 seconds),maxX(10 seconds),minY(10 seconds),maxY(10 seconds),minZ(10 seconds),maxZ(10 seconds)" << endl;
 	for (unsigned int i = 0; i < collectedTime.size(); i++) {
 		string display;
-		outputFile << collectedTime[i] << "," << doublesX[i] << "," << doublesY[i] << "," <<  doublesZ[i] << "," << smaXTwenty[i] << "," << smaXHund[i] << "," << smaYTwenty[i] << "," << smaYHund[i] << "," << smaZTwenty[i] << "," << smaZHund[i] <<  endl;
+		outputFile << collectedTime[i] << "," << doublesX[i] << "," << doublesY[i] << "," <<  doublesZ[i] << "," << smaXTwenty[i] << "," << smaXHund[i] << "," << smaYTwenty[i] << "," << smaYHund[i] << "," << smaZTwenty[i] << "," << smaZHund[i] << "," << valsMinHundredX[i] <<  "," << valsMaxHundredX[i] << "," << valsMinHundredY[i] << "," << valsMaxHundredY[i]  <<  "," << valsMinHundredZ[i] << "," << valsMaxHundredZ[i] <<endl;
 	}
 }
 
